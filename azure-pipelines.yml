@@ -1,16 +1,37 @@
 trigger:
-- master
+- main
 
 pool:
-  name: default
+  name: Default
 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '20.x'
-  displayName: 'Install Node.js'
+stages:
 
-- script: |
-    npm install --legacy-peer-deps
-    npm run build
-  displayName: 'npm install and build'
+# ---------------------- Build Stage ----------------------
+- stage: Build
+  displayName: 'Build Stage'
+  jobs:
+  - job: BuildJob
+    displayName: 'Node.js Build Job'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '20.x'
+      displayName: 'Install Node.js'
+
+    - script: |
+        npm install
+        npm run build
+      displayName: 'npm install and build'
+
+# ---------------------- Deploy Stage ----------------------
+- stage: Deploy
+  displayName: 'Deploy Stage'
+  dependsOn: Build
+  jobs:
+  - job: DeployJob
+    displayName: 'Dummy Deploy Job'
+    steps:
+    - script: |
+        echo "Simulating deployment..."
+        echo "You can replace this step with real deployment steps like Azure App Service Deploy, FTP upload, etc."
+      displayName: 'Dummy Deployment Step'
