@@ -1,13 +1,8 @@
-# Node.js with React
-# Build a Node.js project that uses React.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
-
 trigger:
 - master
 
 pool:
-  name : default
+  name: default
 
 steps:
 - task: NodeTool@0
@@ -16,6 +11,6 @@ steps:
   displayName: 'Install Node.js'
 
 - script: |
-    npm install
+    npm install --legacy-peer-deps
     npm run build
   displayName: 'npm install and build'
