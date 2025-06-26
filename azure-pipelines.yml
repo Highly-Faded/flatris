@@ -4,7 +4,7 @@ trigger:
       - main  # Or change to master/dev based on your branch
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name : default
 
 stages:
 - stage: Build
