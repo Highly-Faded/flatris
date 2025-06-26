@@ -1,17 +1,17 @@
 trigger:
-- main
+  branches:
+    include:
+      - main  # Or change to master/dev based on your branch
 
 pool:
-  name: Default
+  vmImage: 'ubuntu-latest'
 
 stages:
-
-# ---------------------- Build Stage ----------------------
 - stage: Build
   displayName: 'Build Stage'
   jobs:
-  - job: BuildJob
-    displayName: 'Node.js Build Job'
+  - job: Build
+    displayName: 'Install and Build'
     steps:
     - task: NodeTool@0
       inputs:
@@ -19,19 +19,32 @@ stages:
       displayName: 'Install Node.js'
 
     - script: |
-        npm install
+        npm install --legacy-peer-deps
         npm run build
-      displayName: 'npm install and build'
+      displayName: 'Run npm install and build'
 
-# ---------------------- Deploy Stage ----------------------
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathToPublish: 'build'  # Change this if your build output folder is different (e.g., dist)
+        artifactName: 'drop'
+      displayName: 'Publish Artifacts'
+
 - stage: Deploy
-  displayName: 'Deploy Stage'
+  displayName: 'Deployment Stage'
   dependsOn: Build
+  condition: succeeded()
   jobs:
-  - job: DeployJob
-    displayName: 'Dummy Deploy Job'
+  - job: Deploy
+    displayName: 'Deploy Job'
     steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'drop'
+      displayName: 'Download Build Artifacts'
+
     - script: |
-        echo "Simulating deployment..."
-        echo "You can replace this step with real deployment steps like Azure App Service Deploy, FTP upload, etc."
-      displayName: 'Dummy Deployment Step'
+        echo "Deployment started..."
+        echo "You can replace this with your actual deploy command (Azure CLI, FTP, etc)"
+      displayName: 'Dummy Deploy Step'
